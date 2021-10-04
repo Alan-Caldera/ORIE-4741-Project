@@ -1,1 +1,1 @@
-
+Note: we have two project proposals, as you can see.  This is because we're interested in two different ideas between data analysis or algorithm development and wanted to get feedback.  Please grade the data analysis project proposal for now, simply because we couldn't fit sources for the algorithm development paper on the one page (we do have some papers in mind though).  If you have comments for algorithm development, would be much appreciated.
