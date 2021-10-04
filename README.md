@@ -12,4 +12,8 @@ https://www.nature.com/articles/s41592-019-0534-4
 
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-106
 
+https://towardsdatascience.com/clustering-analyses-with-highly-imbalanced-datasets-27e486cd82a4
+
+https://www.sciencedirect.com/science/article/pii/S0890540112001575
+
 Comments on both proposals appreciated!
