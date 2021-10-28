@@ -37,17 +37,13 @@ class GMM():
             # update self.theta
             km = KMeans(n_clusters=self.num_means)
             km.fit(X)
-            keys = np.array([x**2 + y**2 for x, y in km.cluster_centers_])
-            order = keys.argsort()
             theta['a'] = (np.unique(km.labels_, return_counts=True)[
-                          1] / len(X))[order]
-            theta['mu'] = km.cluster_centers_[order]
+                          1] / len(X))
+            theta['mu'] = km.cluster_centers_
         elif method == "random":
-            means = np.random.rand(self.num_means, theta['num_dims']) * 20 - 10
-            keys = np.array([x**2 + y**2 for x, y in means])
-            order = keys.argsort()
-            theta['mu'] = means[order]
-        # theta = self._update_cdf_major(X, theta)
+            mean_idxs = np.random.choice(X.shape[0], size=self.num_means)
+            means = X[mean_idxs]
+            theta['mu'] = means
         self.theta = theta
 
     def _get_prob(self, Z, theta):
@@ -83,6 +79,12 @@ class GMM():
         mat = (np.sqrt(prob_col) * (X - mu).T).T
         return mat.T @ mat
 
+    def plot2d(self, X, theta=None):
+        if theta is None:
+            theta = self.theta
+        plt.scatter(X[:, 0], X[:, 1], c=self.predict(X, theta))
+        plt.show()
+
     # EM for general gaussian mixture
     def _GM_EM_iter(self, X, theta):  # keep a general GM-EM-iter implementation,
         ''' Steps theta on X
@@ -115,7 +117,9 @@ class GMM():
         # new_theta = self._update_cdf_major(X, new_theta)
         return new_theta
 
-    def _gmm_likelihood(self, X, theta):
+    def gmm_likelihood(self, X, theta=None):
+        if theta is None:
+            theta = self.theta
         n, d = X.shape
         return np.sum([
             np.log(np.sum([
@@ -127,7 +131,7 @@ class GMM():
             ])) for i in range(n)
         ])
 
-    def fit(self, X, eps=1e-4, max_iters=1e3, init=None):
+    def fit(self, X, eps=1e-4, max_iters=1e3, init=None, verbose=0):
         if not init is None:
             self._para_init(X, method=init)
         else:
@@ -143,8 +147,9 @@ class GMM():
             # find pseudolikelihood
             # if likelihood is greater than previous max
             #     set self.theta to current theta
-            likelihood = self._gmm_likelihood(X, theta_new)
-            # print('likelihood', likelihood)
+            likelihood = self.gmm_likelihood(X, theta_new)
+            if verbose > 0:
+                print('likelihood', likelihood)
             # print("MONOTONIC:", likelihood > max_likelihood)
             if likelihood > max_likelihood:
                 self.theta = theta_new.copy()
